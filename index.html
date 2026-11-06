@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="Demo visual de un sistema de gestión de inventario desarrollado como complemento de un proyecto SQL con PostgreSQL.">
+  <title>StockPilot | Gestión de inventario</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="StockPilot inicio">
+        <span class="brand-mark">S</span>
+        <span><strong>StockPilot</strong><small>INVENTORY CONTROL</small></span>
+      </a>
+      <div class="workspace-label">ESPACIO DE TRABAJO</div>
+      <nav class="side-nav" aria-label="Navegación principal">
+        <button class="nav-link active" data-view="dashboard"><span class="nav-icon">▦</span> Resumen</button>
+        <button class="nav-link" data-view="inventory"><span class="nav-icon">▤</span> Inventario</button>
+        <button class="nav-link" data-view="movements"><span class="nav-icon">↕</span> Movimientos</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="demo-note"><span class="live-dot"></span><div><strong>Modo demostración</strong><small>Datos de ejemplo · No conecta a una base real</small></div></div>
+        <div class="profile"><div class="avatar">JT</div><div><strong>Portfolio SQL</strong><small>Proyecto de práctica</small></div></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="breadcrumb">Operaciones <span>/</span> <strong id="crumb">Resumen</strong></div>
+        <div class="top-actions"><span class="today" id="today"></span><span class="top-avatar">JT</span></div>
+      </header>
+
+      <section class="page-heading">
+        <div><div class="eyebrow">PANEL DE CONTROL <span class="eyebrow-line"></span></div><h1 id="page-title">Resumen de inventario</h1><p id="page-subtitle">Una vista clara del estado de tus productos y movimientos.</p></div>
+        <button class="primary-btn" id="add-product-btn"><span>＋</span> Nuevo producto</button>
+      </section>
+
+      <section class="stats-grid" aria-label="Indicadores principales">
+        <article class="stat-card"><div class="stat-top"><span>Productos registrados</span><span class="stat-icon purple">▤</span></div><div class="stat-value" id="stat-products">—</div><div class="stat-foot">En el catálogo actual</div></article>
+        <article class="stat-card"><div class="stat-top"><span>Unidades en stock</span><span class="stat-icon blue">▥</span></div><div class="stat-value" id="stat-units">—</div><div class="stat-foot">Existencias disponibles</div></article>
+        <article class="stat-card"><div class="stat-top"><span>Stock bajo</span><span class="stat-icon amber">⚠</span></div><div class="stat-value" id="stat-low">—</div><div class="stat-foot"><span class="warning-text">Requieren reposición</span></div></article>
+        <article class="stat-card"><div class="stat-top"><span>Valor estimado</span><span class="stat-icon green">$</span></div><div class="stat-value" id="stat-value">—</div><div class="stat-foot">Según precio y cantidad</div></article>
+      </section>
+
+      <section class="content-grid" id="dashboard-view">
+        <article class="panel inventory-panel">
+          <div class="panel-heading"><div><h2>Inventario reciente</h2><p>Control de existencias por producto</p></div><button class="text-btn" data-view="inventory">Ver inventario <span>→</span></button></div>
+          <div class="toolbar"><label class="search-box"><span>⌕</span><input id="search" type="search" placeholder="Buscar producto..." aria-label="Buscar producto"></label><select id="category-filter" aria-label="Filtrar por categoría"><option value="all">Todas las categorías</option></select></div>
+          <div class="table-wrap"><table><thead><tr><th>PRODUCTO</th><th>CATEGORÍA</th><th>STOCK</th><th>PRECIO UNIT.</th><th>ESTADO</th><th></th></tr></thead><tbody id="product-rows"></tbody></table></div>
+          <div class="table-footer"><span id="table-count">Mostrando productos</span><span class="demo-tag">DATOS DE EJEMPLO</span></div>
+        </article>
+        <aside class="panel alerts-panel"><div class="panel-heading"><div><h2>Alertas de stock</h2><p>Productos que necesitan atención</p></div><span class="alert-count" id="alert-count">0</span></div><div id="alerts-list" class="alerts-list"></div><div class="alert-tip"><span>✦</span><p><strong>Consejo operativo</strong> Revisá los niveles mínimos antes de realizar nuevos pedidos a proveedores.</p></div></aside>
+      </section>
+
+      <section class="panel full-panel hidden" id="inventory-view"><div class="panel-heading"><div><h2>Todos los productos</h2><p>Administrá las existencias del catálogo de ejemplo</p></div></div><div class="toolbar"><label class="search-box"><span>⌕</span><input id="search-all" type="search" placeholder="Buscar por nombre o categoría..." aria-label="Buscar productos"></label></div><div class="table-wrap"><table><thead><tr><th>PRODUCTO</th><th>CATEGORÍA</th><th>STOCK</th><th>STOCK MÍNIMO</th><th>PRECIO UNIT.</th><th>ESTADO</th><th>AJUSTAR</th></tr></thead><tbody id="all-product-rows"></tbody></table></div></section>
+
+      <section class="panel full-panel hidden" id="movements-view"><div class="panel-heading"><div><h2>Historial de movimientos</h2><p>Registro de entradas y salidas realizadas en esta demostración</p></div><span class="demo-tag">REGISTRO LOCAL</span></div><div class="table-wrap"><table><thead><tr><th>FECHA</th><th>PRODUCTO</th><th>TIPO</th><th>CANTIDAD</th><th>DETALLE</th></tr></thead><tbody id="movement-rows"></tbody></table></div><div class="empty-state hidden" id="empty-movements">Todavía no hay movimientos. Ajustá el stock desde Inventario para generar el primero.</div></section>
+
+      <footer class="footer"><span>StockPilot · Demo de portfolio</span><span>Diseñado para practicar gestión de inventario y SQL</span></footer>
+    </main>
+  </div>
+
+  <dialog id="product-dialog" class="modal"><form id="product-form"><div class="modal-heading"><div><span class="eyebrow">CATÁLOGO</span><h2>Agregar producto</h2></div><button type="button" class="close-btn" id="close-dialog" aria-label="Cerrar">×</button></div><label>Nombre del producto<input name="name" required maxlength="48" placeholder="Ej. Teclado inalámbrico"></label><label>Categoría<select name="category"><option>Accesorios</option><option>Electrónica</option><option>Oficina</option><option>Almacenamiento</option><option>Periféricos</option></select></label><div class="form-row"><label>Stock inicial<input name="stock" type="number" min="0" value="10" required></label><label>Stock mínimo<input name="minimum" type="number" min="0" value="5" required></label></div><label>Precio unitario (ARS)<input name="price" type="number" min="0" step="0.01" value="10000" required></label><button class="primary-btn submit-btn" type="submit">Guardar producto</button><p class="form-hint">Se guardará en este navegador para que puedas probar la demo.</p></form></dialog>
+  <script src="app.js"></script>
+</body>
+</html>
